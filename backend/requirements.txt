@@ -1,0 +1,13 @@
+langchain-community
+numpy
+sentence-transformers
+chromadb
+langchain
+scikit-learn
+langchain-openai
+python-dotenv
+pypdf
+chromadb
+pytest
+mcp
+langgraph
