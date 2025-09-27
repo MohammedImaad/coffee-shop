@@ -1,4 +1,3 @@
-from get_mcp_tools import test_mcp_server_connection
 from typing_extensions import TypedDict
 from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
@@ -17,17 +16,11 @@ from langchain_core.tools import tool
 from typing import Annotated
 from langgraph.prebuilt import ToolNode
 from retriever_file import get_answer
+from mcp_helpers import create_session, get_signed_transaction_func, get_wallet_info_func
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 async def main():
-    tools = await test_mcp_server_connection()
-    print(tools)
-    llm = ChatOpenAI(
-        model="gpt-4",
-        temperature=0.5,
-        api_key=OPENAI_API_KEY
-    )
-    llm_with_tools=llm.bind_tools(tools)
+    
     class State(TypedDict):
         messages: Annotated[list[AnyMessage], add_messages]
         
@@ -42,10 +35,35 @@ async def main():
             Answer:"""
         response = llm_with_tools.invoke(prompt)
         return {"messages": [response]}
-    
+    llm = ChatOpenAI(
+        model="gpt-4",
+        temperature=0.5,
+        api_key=OPENAI_API_KEY
+    )
+    async def wallet_info(**kwargs):
+        """Return wallet address, balances, and recent transactions."""
+        return await get_wallet_info_func(session, **kwargs)
+
+    async def signed_tx(**kwargs):
+        """Builds and signs a partial transaction to be completed by backend fee payer."""
+        return await get_signed_transaction_func(session, **kwargs)
+    def should_continue(state: State) -> State:
+        print("STATE SHOULD CONTINUE: ", state)
+        messages = state["messages"]
+        last_message = messages[-1]
+        print("LAST MESSAGE: ", last_message)
+        if last_message.tool_calls:
+            return "tools"
+        return END
+    llm_with_tools=llm.bind_tools([wallet_info, signed_tx])
+    session, exit_stack = await create_session()
     builder = StateGraph(State)
     builder.add_node("get_response", get_response)
+    tool_node = ToolNode([wallet_info,signed_tx])
+    builder.add_node("tools", tool_node)
     builder.add_edge(START, "get_response")
+    builder.add_conditional_edges("get_response",should_continue)
+    builder.add_edge("tools", "get_response")
     builder.add_edge("get_response", END)
     graph = builder.compile()
     initial_state = {
@@ -58,7 +76,7 @@ async def main():
     for m in messages:
         m.pretty_print()
     
-    
+    await exit_stack.aclose()
     
 
 if __name__ == "__main__":
