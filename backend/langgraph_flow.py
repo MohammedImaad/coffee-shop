@@ -16,7 +16,7 @@ from langchain_core.tools import tool
 from typing import Annotated
 from langgraph.prebuilt import ToolNode
 from retriever_file import get_answer
-from mcp_helpers import create_session, get_signed_transaction_func, get_wallet_info_func
+from mcp_helpers import create_session, get_signed_transaction_func, get_wallet_info_func, send_money_to_wallet_func, get_credit_func
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 async def main():
@@ -47,6 +47,22 @@ async def main():
     async def signed_tx(**kwargs):
         """Builds and signs a partial transaction to be completed by backend fee payer."""
         return await get_signed_transaction_func(session, **kwargs)
+    
+    async def credit(**kwargs):
+        """Get your credit balance."""
+        return await get_credit_func(session, **kwargs)
+
+    async def send_money_to_wallet(amount_usdc: str, target_wallet: str):
+        """Send money to a wallet.
+            
+        """
+        amount_usdc = str(amount_usdc)
+        target_wallet = str(target_wallet)
+        print("Seedhe Maut", amount_usdc, target_wallet)
+        params = {"amount_usdc": amount_usdc, "target_wallet": target_wallet}
+        return await send_money_to_wallet_func(session, kwargs=params)
+
+
     def should_continue(state: State) -> State:
         print("STATE SHOULD CONTINUE: ", state)
         messages = state["messages"]
@@ -55,11 +71,12 @@ async def main():
         if last_message.tool_calls:
             return "tools"
         return END
-    llm_with_tools=llm.bind_tools([wallet_info, signed_tx])
+    
+    llm_with_tools=llm.bind_tools([wallet_info, signed_tx,credit,send_money_to_wallet])
     session, exit_stack = await create_session()
     builder = StateGraph(State)
     builder.add_node("get_response", get_response)
-    tool_node = ToolNode([wallet_info,signed_tx])
+    tool_node = ToolNode([wallet_info,signed_tx,credit,send_money_to_wallet])
     builder.add_node("tools", tool_node)
     builder.add_edge(START, "get_response")
     builder.add_conditional_edges("get_response",should_continue)
@@ -67,7 +84,7 @@ async def main():
     builder.add_edge("get_response", END)
     graph = builder.compile()
     initial_state = {
-        "messages": [HumanMessage(content="Whats the balance")]
+        "messages": [HumanMessage(content="send 0.1  USDC  to wallet axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH using the appropraite function. If theres an error show entire error stack.")]
     }
 
     # Run the graph

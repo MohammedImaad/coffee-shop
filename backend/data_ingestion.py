@@ -69,7 +69,6 @@ class EmbeddingManager:
         
        # print(f"Generating embeddings for {len(texts)} texts...")
         embeddings = self.model.encode(texts, show_progress_bar=True)
-      #  print(f"Generated embeddings with shape: {embeddings.shape}")
         return embeddings
 
 
