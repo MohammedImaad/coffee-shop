@@ -17,6 +17,7 @@ from typing import Annotated
 from langgraph.prebuilt import ToolNode
 from retriever_file import get_answer
 from mcp_helpers import create_session, get_signed_transaction_func, get_wallet_info_func, send_money_to_wallet_func, get_credit_func
+from test_payment import use_tool
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 async def main():
@@ -56,11 +57,11 @@ async def main():
         """Send money to a wallet.
             
         """
-        amount_usdc = str(amount_usdc)
+        amount_usdc = int(amount_usdc)
         target_wallet = str(target_wallet)
         print("Seedhe Maut", amount_usdc, target_wallet)
         params = {"amount_usdc": amount_usdc, "target_wallet": target_wallet}
-        return await send_money_to_wallet_func(session, kwargs=params)
+        return await use_tool("transfer_funds",amount=amount_usdc,seller_wallet=target_wallet)
 
 
     def should_continue(state: State) -> State:
@@ -84,7 +85,7 @@ async def main():
     builder.add_edge("get_response", END)
     graph = builder.compile()
     initial_state = {
-        "messages": [HumanMessage(content="send 0.1  USDC  to wallet axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH using the appropraite function. If theres an error show entire error stack.")]
+        "messages": [HumanMessage(content="send 1000 atomic amount  to wallet axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH using the appropraite function. If theres an error show entire error stack.")]
     }
 
     # Run the graph

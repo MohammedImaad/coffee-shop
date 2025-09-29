@@ -21,6 +21,7 @@ async def use_tool(arg: str,amount=0,seller_wallet="") -> dict:
         "mint": MINT_ADDRESS
     }
     signed_transaction = await signed_tx(**kwargs)
+    print("Nayaab:",signed_transaction)
     signed_b64 = signed_transaction.content[0].text.split("signedTransactionB64: ")[1]
     res = requests.post(FACILITATOR_URL, json={
             "chain": "solana",
@@ -35,18 +36,4 @@ async def use_tool(arg: str,amount=0,seller_wallet="") -> dict:
     return data
   
     
-
-
-
-
-async def main():
-   
-
-
-    result = await use_tool("transfer_funds",amount=10000,seller_wallet="axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH")
-
-    print("use_tool result:", result)
-
-if __name__ == "__main__":
-    asyncio.run(main())
 
