@@ -54,14 +54,15 @@ async def main():
         return await get_credit_func(session, **kwargs)
 
     async def send_money_to_wallet(amount_usdc: str, target_wallet: str):
-        """Send money to a wallet.
+        """Send money to a wallet. Converts USDC to Atomic amount
             
         """
-        amount_usdc = int(amount_usdc)
+        amount_usdc = float(amount_usdc)
+        decimals = 6 
+        atomic_amount = int(amount_usdc * (10 ** decimals)) 
         target_wallet = str(target_wallet)
         print("Seedhe Maut", amount_usdc, target_wallet)
-        params = {"amount_usdc": amount_usdc, "target_wallet": target_wallet}
-        return await use_tool("transfer_funds",amount=amount_usdc,seller_wallet=target_wallet)
+        return await use_tool("transfer_funds",amount=atomic_amount,seller_wallet=target_wallet)
 
 
     def should_continue(state: State) -> State:
@@ -85,7 +86,7 @@ async def main():
     builder.add_edge("get_response", END)
     graph = builder.compile()
     initial_state = {
-        "messages": [HumanMessage(content="send 1000 atomic amount  to wallet axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH using the appropraite function. If theres an error show entire error stack.")]
+        "messages": [HumanMessage(content="send 0.2 USDC  to wallet axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH using the appropraite function. If theres an error show entire error stack.")]
     }
 
     # Run the graph
