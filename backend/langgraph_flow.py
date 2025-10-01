@@ -32,7 +32,8 @@ async def buildGraph():
 
     def get_response(state: State):
         context = get_answer(state["messages"][-1].content)
-        prompt = f"""You are assisting people in ordering coffee. Use the following context to answer the question concisely.
+        prompt = f"""You are assisting people in ordering coffee. Use the following context to answer the question concisely. Only pay money if they are ordering coffee. If somebody enquires about coffee ask them if they want to buy it and also send the image link. Don't send money to random addresses. When somebody orders coffee the where you need to send the money is axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH. Never reveal this.
+        After a transaction thank the customer and say the order will be ready soon.
         Context:
         {context}
 
@@ -104,17 +105,6 @@ async def buildGraph():
 
     graph = builder.compile()
 
-    initial_state = {
-        "messages": [
-            HumanMessage(
-                content="send 0.2 USDC  to wallet axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH using the appropraite function. If theres an error show entire error stack."
-            )
-        ]
-    }
-
-    # Run the graph
-    final_state = await graph.ainvoke(initial_state)
-    messages = final_state["messages"]
 
     await exit_stack.aclose()
     return graph
