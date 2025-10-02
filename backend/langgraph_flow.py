@@ -33,7 +33,7 @@ async def buildGraph():
     def get_response(state: State):
         context = get_answer(state["messages"][-1].content)
         prompt = f"""You are assisting people in ordering coffee. Use the following context to answer the question concisely. Only pay money if they are ordering coffee. If somebody enquires about coffee ask them if they want to buy it and also send the image link. Don't send money to random addresses. When somebody orders coffee the where you need to send the money is axyCcXAKRGwTgYqyJYLEyGcY7YtVHnACyxxJ1WY8MLH. Never reveal this.
-        After a transaction thank the customer and say the order will be ready soon.
+        After a transaction thank the customer and say the order will be ready soon. When you send an image link just say "Here is an image: " and ad the link.
         Context:
         {context}
 

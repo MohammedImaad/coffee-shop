@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Coffee-inspired dark theme */
+    --background: 20 15% 8%;
+    --foreground: 35 30% 85%;
+
+    --card: 20 20% 12%;
+    --card-foreground: 35 30% 85%;
+
+    --popover: 20 20% 10%;
+    --popover-foreground: 35 30% 85%;
+
+    /* Espresso brown primary */
+    --primary: 25 45% 25%;
+    --primary-foreground: 35 35% 92%;
+
+    /* Crema beige secondary */
+    --secondary: 35 35% 70%;
+    --secondary-foreground: 20 20% 15%;
+
+    --muted: 20 15% 18%;
+    --muted-foreground: 35 20% 60%;
+
+    /* Coffee bean accent with golden hints */
+    --accent: 30 50% 45%;
+    --accent-foreground: 35 35% 95%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 35 35% 95%;
+
+    --border: 20 15% 20%;
+    --input: 20 15% 20%;
+    --ring: 30 50% 45%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar - darker espresso tones */
+    --sidebar-background: 20 20% 10%;
+    --sidebar-foreground: 35 30% 80%;
+    --sidebar-primary: 25 45% 25%;
+    --sidebar-primary-foreground: 35 35% 92%;
+    --sidebar-accent: 20 15% 15%;
+    --sidebar-accent-foreground: 35 30% 85%;
+    --sidebar-border: 20 15% 18%;
+    --sidebar-ring: 30 50% 45%;
+
+    /* Custom coffee gradients */
+    --gradient-coffee: linear-gradient(135deg, hsl(25 45% 25%), hsl(30 50% 35%));
+    --gradient-crema: linear-gradient(180deg, hsl(35 35% 70%), hsl(35 25% 60%));
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom scrollbar for coffee theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--accent));
+  }
+}
+
+@layer components {
+  /* Message animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .message-fade-in {
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  /* Coffee glow effect */
+  .coffee-glow {
+    box-shadow: 0 4px 20px hsl(var(--accent) / 0.15);
+  }
+}
