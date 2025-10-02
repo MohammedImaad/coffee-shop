@@ -13,21 +13,45 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async (content: string) => {
-    const userMessage: Message = { type: "human", content };
-    setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
+  const userMessage: Message = { type: "human", content };
+  setMessages((prev) => [...prev, userMessage]);
+  setIsLoading(true);
 
-    // TODO: Replace with actual API call to backend
-    // For now, simulating a response
-    setTimeout(() => {
-      const mockResponse: Message = {
+  try {
+    // Prepare request body (all messages including the new one)
+    const updatedMessages = [...messages, userMessage];
+
+    const response = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ messages: updatedMessages }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // The backend returns `messages`, we’ll take the last one as the AI’s reply
+    const aiMessages = data.messages.filter((msg: any) => msg.type === "ai");
+
+    if (aiMessages.length > 0) {
+      const aiMessage: Message = {
         type: "ai",
-        content: "An espresso at Brew Haven Coffee Shop costs 0.1 USDC. Would you like to order one? Here is an image: https://upload.wikimedia.org/wikipedia/commons/a/a5/Tazzina_di_caff%C3%A8_a_Ventimiglia.jpg",
+        content: aiMessages[aiMessages.length - 1].content,
       };
-      setMessages((prev) => [...prev, mockResponse]);
-      setIsLoading(false);
-    }, 1000);
-  };
+      setMessages((prev) => [...prev, aiMessage]);
+    }
+  } catch (error) {
+    console.error("Error sending message:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="h-screen flex flex-col">

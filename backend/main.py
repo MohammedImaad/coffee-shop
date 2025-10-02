@@ -5,8 +5,15 @@ import asyncio
 from langchain_core.messages import HumanMessage
 from langgraph_flow import buildGraph
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],  # frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 class ChatRequest(BaseModel):
     messages: List[Dict[str, Any]]
 
