@@ -8,9 +8,7 @@ import os
 from typing import List, Dict, Any, Tuple
 from sklearn.metrics.pairwise import cosine_similarity
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
 from langchain.agents import initialize_agent, Tool
 
 loader = PyPDFLoader("coffee_knowledge_base.pdf")
@@ -104,8 +102,7 @@ class VectorStore:
                 name=self.collection_name,
                 metadata={"description": "PDF document embeddings for RAG"}
             )
-          #  print(f"Vector store initialized. Collection: {self.collection_name}")
-          #  print(f"Existing documents in collection: {self.collection.count()}")
+          
             
         except Exception as e:
           #  print(f"Error initializing vector store: {e}")
@@ -122,9 +119,7 @@ class VectorStore:
         if len(documents) != len(embeddings):
             raise ValueError("Number of documents must match number of embeddings")
         
-       #  print(f"Adding {len(documents)} documents to vector store...")
-        
-        # Prepare data for ChromaDB
+       
         ids = []
         metadatas = []
         documents_text = []
@@ -155,8 +150,7 @@ class VectorStore:
                 metadatas=metadatas,
                 documents=documents_text
             )
-          #   print(f"Successfully added {len(documents)} documents to vector store")
-          #   print(f"Total documents in collection: {self.collection.count()}")
+         
             
         except Exception as e:
            #  print(f"Error adding documents to vector store: {e}")

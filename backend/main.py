@@ -30,7 +30,6 @@ async def startup_event():
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     global conversation_history
-
     # Add new messages to history
     new_messages = [HumanMessage(content=msg["content"]) for msg in request.messages]
     conversation_history.extend(new_messages)
